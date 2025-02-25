@@ -1,0 +1,20 @@
+TODO:
+- [X] Create an X11 window:
+	- OpenGL context;
+	- Fullscreen;
+	- Borderless;
+	- With inputing management;
+- [ ] Load OpenGL:
+	- Load all the necessary functions;
+	- Create all the necessary macros;
+- [ ] Rendering functionality:
+	- Create a renderer;
+	- Render a textured quad onto the screen;
+- [ ] Screenshoting:
+	- Catch the desktop at the beginning of the application;
+	- Create the texture based on the screenshot;
+- [ ] Inputing:
+	- Mouse: panning;
+	- Scroll: zooming in and out;
+	- R: resets the texture;
+	- Esc: quit
