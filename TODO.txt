@@ -4,13 +4,13 @@ TODO:
 	- Fullscreen;
 	- Borderless;
 	- With inputing management;
-- [ ] Load OpenGL:
+- [X] Load OpenGL:
 	- Load all the necessary functions;
 	- Create all the necessary macros;
-- [ ] Rendering functionality:
+- [X] Rendering functionality:
 	- Create a renderer;
 	- Render a textured quad onto the screen;
-- [ ] Screenshoting:
+- [X] Screenshoting:
 	- Catch the desktop at the beginning of the application;
 	- Create the texture based on the screenshot;
 - [ ] Inputing:

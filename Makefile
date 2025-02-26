@@ -15,6 +15,8 @@ SRCS =							\
 	./xzoom-render.c			\
 	./xzoom-draw.c				\
 	./xzoom-opengl.c			\
+	./xzoom-screenshot.c		\
+	./xzoom-math.c				\
 	./xzoom.c
 OBJS = $(SRCS:.c=.o)
 TARGET = xzoom

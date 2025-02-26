@@ -28,8 +28,9 @@ static int	glattr[] = {
 	None
 };
 
-void	*xzoom_init(unsigned w, unsigned h) {
-	XSetWindowAttributes	wndattr;
+void	*xzoom_init(void) {
+	XSetWindowAttributes	wndattr0;
+	XWindowAttributes		wndattr1;
 	Colormap				cmap;
 	GLXFBConfig				*fbconf;
 	XVisualInfo				*vinf;
@@ -49,20 +50,22 @@ void	*xzoom_init(unsigned w, unsigned h) {
 	/* Creating the colormap */	
 	cmap = XCreateColormap(wnd->dsp, DefaultRootWindow(wnd->dsp), vinf->visual, AllocNone);
 	/* Setting up window attributes */
-	wndattr.colormap = cmap;
-	wndattr.background_pixmap = None;
-    wndattr.border_pixel = 0;
-	wndattr.event_mask = CWColormap | CWBorderPixel | CWBackPixel | CWEventMask | KeyPress | ClientMessage;
+	XGetWindowAttributes(wnd->dsp, DefaultRootWindow(wnd->dsp), &wndattr1);
+	wndattr0.colormap = cmap;
+	wndattr0.background_pixmap = None;
+    wndattr0.border_pixel = 0;
+	wndattr0.event_mask = CWColormap | CWBorderPixel | CWBackPixel | CWEventMask | KeyPress | ClientMessage;
 	/* Creating an X11 window */
 	wnd->id = XCreateWindow(
 		wnd->dsp,
 		DefaultRootWindow(wnd->dsp),
-		0, 0, w, h, 0,
+		0, 0,
+		wndattr1.width, wndattr1.height, 0,
 		vinf->depth,
 		InputOutput,
 		vinf->visual,
 		CWColormap | CWBorderPixel | CWBackPixel | CWEventMask,
-		&wndattr
+		&wndattr0
 	);
 	/* Creating a glX context */
 	memset(context_attr, 0, sizeof(context_attr));
@@ -81,7 +84,7 @@ void	*xzoom_init(unsigned w, unsigned h) {
 	XSelectInput(wnd->dsp, wnd->id, KeyPressMask | KeyReleaseMask);
 	__xzoom_fullscreen(wnd);
 	xzoom_loadgl((void *(*)(const char *)) glXGetProcAddress);
-	glViewport(0, 0, w, h);
+	glViewport(0, 0, wndattr1.width, wndattr1.height);
 	/* Mapping an X11 window onto the display */
 	XMapWindow(wnd->dsp, wnd->id);
 	/* Freeing resources */
@@ -136,6 +139,24 @@ int	xzoom_swap_buffers(void *wnd) {
 	wptr = (t_wnd *) wnd;
 	glXSwapBuffers(wptr->dsp, wptr->id);
 	return (1);
+}
+
+int	xzoom_window_w(void *wnd) {
+	XWindowAttributes	attr;
+	t_wnd				*wptr;
+
+	wptr = (t_wnd *) wnd;
+	XGetWindowAttributes(wptr->dsp, wptr->id, &attr);
+	return (attr.width);
+}
+
+int	xzoom_window_h(void *wnd) {
+	XWindowAttributes	attr;
+	t_wnd				*wptr;
+
+	wptr = (t_wnd *) wnd;
+	XGetWindowAttributes(wptr->dsp, wptr->id, &attr);
+	return (attr.height);
 }
 
 static void	*__xzoom_fbconfig(void *wnd, int *best) {

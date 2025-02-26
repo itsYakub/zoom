@@ -13,7 +13,7 @@ static const char	*glsl_vertex =
 "uniform mat4					u_proj;\n"
 "uniform mat4					u_view;\n"
 "void main() {\n"
-" 	gl_Position = vec4(a_Pos, 1.0f);\n"
+" 	gl_Position = u_proj * u_view * vec4(a_Pos, 1.0f);\n"
 "	v_Col = a_Col;\n"
 "	v_TexCoord = a_TexCoord;\n"
 "}";
@@ -87,6 +87,13 @@ void	*xzoom_render(void *wnd) {
 	glGenerateMipmap(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	rndr->s_txt.cur = rndr->s_txt.def;
+	/* Projection setup */
+	xzoom_mat4_identity(rndr->s_proj.mat_v);
+	xzoom_mat4_ortho(rndr->s_proj.mat_p, 0.0f, xzoom_window_h(wnd), 0.0f, xzoom_window_w(wnd));
+	glUseProgram(rndr->s_gl.shd);
+	rndr->s_proj.mat_p_loc = glGetUniformLocation(rndr->s_gl.shd, "u_proj");
+	rndr->s_proj.mat_v_loc = glGetUniformLocation(rndr->s_gl.shd, "u_view");
+	glUseProgram(0);
 	return (rndr);
 }
 
@@ -95,7 +102,8 @@ int	xzoom_begin(void *rndr) {
 
 	rptr = (t_rndr *) rndr;
 	glUseProgram(rptr->s_gl.shd);
-	/* ... */
+	glUniformMatrix4fv(rptr->s_proj.mat_p_loc, 1, 0, &rptr->s_proj.mat_p[0][0]);
+	glUniformMatrix4fv(rptr->s_proj.mat_v_loc, 1, 0, &rptr->s_proj.mat_v[0][0]);
 	glUseProgram(0);
 	return (1);
 }

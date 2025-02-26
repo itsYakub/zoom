@@ -68,3 +68,30 @@ int	xzoom_loadgl(void *(*load)(const char *)) {
 
 	return (1);
 }
+
+unsigned	xzoom_texture(unsigned width, unsigned height, char *dat) {
+	unsigned	id;
+
+	glCreateTextures(GL_TEXTURE_2D, 1, &id);
+	glBindTexture(GL_TEXTURE_2D, id);
+	glTexImage2D(
+		GL_TEXTURE_2D,
+		0,
+		GL_RGBA,
+		width,
+		height,
+		0,
+		GL_RGBA,
+		GL_UNSIGNED_BYTE,
+		dat
+	);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	return (id);
+}
+
+int	xzoom_texture_free(unsigned id) {
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glDeleteTextures(1, &id);
+	return (1);
+}

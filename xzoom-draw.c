@@ -23,3 +23,18 @@ int	xzoom_draw_quad(void *rndr, float v0[3], float v1[3], float v2[3], float v3[
 	glBindVertexArray(0);
 	return (1);
 }
+
+int	xzoom_draw_texture(void *rndr, float rect[4], float uv[4], unsigned id) {
+	return (
+		xzoom_draw_quad(
+			rndr,
+			(t_vec3) { rect[0], rect[1], 0.0f },
+			(t_vec3) { rect[0] + rect[2], rect[1], 0.0f },
+			(t_vec3) { rect[0], rect[1] + rect[3], 0.0f },
+			(t_vec3) { rect[0] + rect[2], rect[1] + rect[3], 0.0f },
+			(t_vec4) { 1.0f, 1.0f, 1.0f, 1.0f },
+			uv,
+			id
+		)
+	);
+}
