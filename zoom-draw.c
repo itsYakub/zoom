@@ -1,7 +1,7 @@
-#include "xzoom.h"
-#include "xzoom-opengl.h"
+#include "zoom.h"
+#include "zoom-opengl.h"
 
-int	xzoom_draw_quad(void *rndr, float v0[3], float v1[3], float v2[3], float v3[3], float col[4], float uv[4], unsigned id) {
+int	zoom_draw_quad(void *rndr, float v0[3], float v1[3], float v2[3], float v3[3], float col[4], float uv[4], unsigned id) {
 	t_rndr	*rptr;
 	float	data[] = {
 		v0[0], v0[1], v0[2], col[0], col[1], col[2], col[3], uv[0], uv[1],
@@ -11,10 +11,10 @@ int	xzoom_draw_quad(void *rndr, float v0[3], float v1[3], float v2[3], float v3[
 	};
 
 	rptr = (t_rndr *) rndr;
-	if (rptr->s_quad.cnt >= XZOOM_QUADC || rptr->s_txt.cur != id) {
-		xzoom_end(rndr);
+	if (rptr->s_quad.cnt >= ZOOM_QUADC || rptr->s_txt.cur != id) {
+		zoom_end(rndr);
 		rptr->s_txt.cur = id;
-		xzoom_begin(rndr);
+		zoom_begin(rndr);
 	}
 	glBindVertexArray(rptr->s_gl.vao);
 	glBindBuffer(GL_ARRAY_BUFFER, rptr->s_gl.vbo);
@@ -24,9 +24,9 @@ int	xzoom_draw_quad(void *rndr, float v0[3], float v1[3], float v2[3], float v3[
 	return (1);
 }
 
-int	xzoom_draw_texture(void *rndr, float rect[4], float uv[4], unsigned id) {
+int	zoom_draw_texture(void *rndr, float rect[4], float uv[4], unsigned id) {
 	return (
-		xzoom_draw_quad(
+		zoom_draw_quad(
 			rndr,
 			(t_vec3) { rect[0], rect[1], 0.0f },
 			(t_vec3) { rect[0] + rect[2], rect[1], 0.0f },

@@ -1,10 +1,5 @@
-#include "xzoom-opengl.h"
-#include "xzoom.h"
-
-/*
- *	TODO:
- *	Load more opengl functions and start building a proper renderer
- * */
+#include "zoom-opengl.h"
+#include "zoom.h"
 
 PFNGLCREATESHADERPROC		glCreateShader = 0;
 PFNGLSHADERSOURCEPROC		glShaderSource = 0;
@@ -32,7 +27,7 @@ PFNGLCREATETEXTURESPROC		glCreateTextures = 0;
 PFNGLBINDTEXTUREUNITPROC	glBindTextureUnit = 0;
 PFNGLGENERATEMIPMAPPROC		glGenerateMipmap = 0;
 
-int	xzoom_loadgl(void *(*load)(const char *)) {
+int	zoom_loadgl(void *(*load)(const char *)) {
 	/* Shader manipulation functions */
 	glCreateShader = (PFNGLCREATESHADERPROC) load("glCreateShader");
 	glShaderSource = (PFNGLSHADERSOURCEPROC) load("glShaderSource");
@@ -69,7 +64,7 @@ int	xzoom_loadgl(void *(*load)(const char *)) {
 	return (1);
 }
 
-unsigned	xzoom_texture(unsigned width, unsigned height, char *dat) {
+unsigned	zoom_texture(unsigned width, unsigned height, char *dat) {
 	unsigned	id;
 
 	glCreateTextures(GL_TEXTURE_2D, 1, &id);
@@ -94,7 +89,7 @@ unsigned	xzoom_texture(unsigned width, unsigned height, char *dat) {
 	return (id);
 }
 
-int	xzoom_texture_free(unsigned id) {
+int	zoom_texture_free(unsigned id) {
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDeleteTextures(1, &id);
 	return (1);

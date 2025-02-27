@@ -1,5 +1,5 @@
-#ifndef XZOOM_OPENGL_H
-# define XZOOM_OPENGL_H
+#ifndef ZOOM_OPENGL_H
+# define ZOOM_OPENGL_H
 
 # include <GL/gl.h>
 # include <GL/glext.h>

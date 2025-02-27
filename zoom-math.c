@@ -1,9 +1,9 @@
-#include "xzoom.h"
+#include "zoom.h"
 
 #include <string.h>
 
-#ifndef XZOOM_MAT4_IDENTITY
-# define XZOOM_MAT4_IDENTITY	(	\
+#ifndef ZOOM_MAT4_IDENTITY
+# define ZOOM_MAT4_IDENTITY	(	\
 	(float [4][4]) {				\
 		{ 1.0f, 0.0f, 0.0f, 0.0f }, \
 		{ 0.0f, 1.0f, 0.0f, 0.0f }, \
@@ -13,12 +13,12 @@
 )
 #endif
 
-int	xzoom_mat4_identity(t_mat4x4 dst) {
-	memcpy(dst, XZOOM_MAT4_IDENTITY, sizeof(t_mat4x4));
+int	zoom_mat4_identity(t_mat4x4 dst) {
+	memcpy(dst, ZOOM_MAT4_IDENTITY, sizeof(t_mat4x4));
 	return (1);
 }
 
-int	xzoom_mat4_inverse(t_mat4x4 dst) {
+int	zoom_mat4_inverse(t_mat4x4 dst) {
 	float	a = dst[0][0],
 			b = dst[0][1],
 			c = dst[0][2],
@@ -69,10 +69,10 @@ int	xzoom_mat4_inverse(t_mat4x4 dst) {
 	return (1);
 }
 
-int	xzoom_mat4_ortho(t_mat4x4 dst, float top, float bottom, float left, float right) {
+int	zoom_mat4_ortho(t_mat4x4 dst, float top, float bottom, float left, float right) {
 	t_mat4x4	_matrix;
 
-	memcpy(_matrix, XZOOM_MAT4_IDENTITY, sizeof(t_mat4x4));
+	memcpy(_matrix, ZOOM_MAT4_IDENTITY, sizeof(t_mat4x4));
 	_matrix[0][0] = 2.0f / (right - left);
 	_matrix[1][1] = 2.0f / (top - bottom);
 	_matrix[2][2] = 1.0f;
@@ -82,27 +82,27 @@ int	xzoom_mat4_ortho(t_mat4x4 dst, float top, float bottom, float left, float ri
 	return (1);
 }
 
-int	xzoom_mat4_trans(t_mat4x4 src, t_vec3 vec, t_mat4x4 dst) {
-	xzoom_vec4_muladds(src[0], vec[0], dst[3]);
-	xzoom_vec4_muladds(src[1], vec[1], dst[3]);
-	xzoom_vec4_muladds(src[2], vec[2], dst[3]);
+int	zoom_mat4_trans(t_mat4x4 src, t_vec3 vec, t_mat4x4 dst) {
+	zoom_vec4_muladds(src[0], vec[0], dst[3]);
+	zoom_vec4_muladds(src[1], vec[1], dst[3]);
+	zoom_vec4_muladds(src[2], vec[2], dst[3]);
 	return (1);	
 }
 
-int	xzoom_vec2_scale(t_vec2 src, float s, t_vec2 dst) {
+int	zoom_vec2_scale(t_vec2 src, float s, t_vec2 dst) {
 	dst[0] = src[0] * s;
 	dst[1] = src[1] * s;
 	return (1);
 }
 
-int	xzoom_mat4_scale(t_mat4x4 src, t_vec3 vec, t_mat4x4 dst) {
-	xzoom_vec4_scale(src[0], vec[0], dst[0]);
-	xzoom_vec4_scale(src[1], vec[1], dst[1]);
-	xzoom_vec4_scale(src[2], vec[2], dst[2]);
+int	zoom_mat4_scale(t_mat4x4 src, t_vec3 vec, t_mat4x4 dst) {
+	zoom_vec4_scale(src[0], vec[0], dst[0]);
+	zoom_vec4_scale(src[1], vec[1], dst[1]);
+	zoom_vec4_scale(src[2], vec[2], dst[2]);
 	return (1);	
 }
 
-int	xzoom_mat4_mulv(t_mat4x4 src, t_vec4 vec, t_vec4 dst) {
+int	zoom_mat4_mulv(t_mat4x4 src, t_vec4 vec, t_vec4 dst) {
 	dst[0] = src[0][0] * vec[0] + src[1][0] * vec[1] + src[2][0] * vec[2] + src[3][0] * vec[3];
 	dst[1] = src[0][1] * vec[0] + src[1][1] * vec[1] + src[2][1] * vec[2] + src[3][1] * vec[3];
 	dst[2] = src[0][2] * vec[0] + src[1][2] * vec[1] + src[2][2] * vec[2] + src[3][2] * vec[3];
@@ -110,7 +110,7 @@ int	xzoom_mat4_mulv(t_mat4x4 src, t_vec4 vec, t_vec4 dst) {
 	return (1);
 }
 
-int	xzoom_vec4_scale(t_vec4 src, float s, t_vec4 dst) {
+int	zoom_vec4_scale(t_vec4 src, float s, t_vec4 dst) {
 	dst[0] = src[0] * s;
 	dst[1] = src[1] * s;
 	dst[2] = src[2] * s;
@@ -118,7 +118,7 @@ int	xzoom_vec4_scale(t_vec4 src, float s, t_vec4 dst) {
 	return (1);
 }
 
-int	xzoom_vec4_muladds(t_vec4 src, float s, t_vec4 dst) {
+int	zoom_vec4_muladds(t_vec4 src, float s, t_vec4 dst) {
 	dst[0] += src[0] * s;
 	dst[1] += src[1] * s;
 	dst[2] += src[2] * s;

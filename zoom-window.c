@@ -1,4 +1,4 @@
-#include "xzoom.h"
+#include "zoom.h"
 
 #include <X11/X.h>
 #include <string.h>
@@ -12,9 +12,9 @@
 typedef GLXContext (* PFNGLXCREATECONTEXTATTRIBSARBPROC) (Display *, GLXFBConfig, GLXContext, Bool, const int *);
 PFNGLXCREATECONTEXTATTRIBSARBPROC	glXCreateContextAttribsARB;
 
-static void	*__xzoom_fbconfig(void *, int *);
-static int	__xzoom_query_mousepos(void *);
-static int	__xzoom_fullscreen(void *);
+static void	*__zoom_fbconfig(void *, int *);
+static int	__zoom_query_mousepos(void *);
+static int	__zoom_fullscreen(void *);
 
 static int	glattr[] = {
 	GLX_USE_GL,				1,
@@ -30,7 +30,7 @@ static int	glattr[] = {
 	None
 };
 
-void	*xzoom_init(void) {
+void	*zoom_init(void) {
 	XSetWindowAttributes	wndattr0;
 	XWindowAttributes		wndattr1;
 	Colormap				cmap;
@@ -47,7 +47,7 @@ void	*xzoom_init(void) {
 	}
 	wnd->dsp = XOpenDisplay(NULL);
 	/* Getting the best framebuffer configuration and initializing visualinfo with them */
-	fbconf = __xzoom_fbconfig(wnd, &fbconf_best);
+	fbconf = __zoom_fbconfig(wnd, &fbconf_best);
 	vinf = glXGetVisualFromFBConfig(wnd->dsp, fbconf[fbconf_best]);
 	/* Creating the colormap */	
 	cmap = XCreateColormap(wnd->dsp, DefaultRootWindow(wnd->dsp), vinf->visual, AllocNone);
@@ -84,9 +84,9 @@ void	*xzoom_init(void) {
 	wnd->wm_quit = XInternAtom(wnd->dsp, "WM_DELETE_WINDOW", 0);
 	XSetWMProtocols(wnd->dsp, wnd->id, &wnd->wm_quit, 1);
 	XSelectInput(wnd->dsp, wnd->id, KeyPressMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask);
-	__xzoom_fullscreen(wnd);
-	__xzoom_query_mousepos(wnd); 
-	xzoom_loadgl((void *(*)(const char *)) glXGetProcAddress);
+	__zoom_fullscreen(wnd);
+	__zoom_query_mousepos(wnd); 
+	zoom_loadgl((void *(*)(const char *)) glXGetProcAddress);
 	glViewport(0, 0, wndattr1.width, wndattr1.height);
 	/* Mapping an X11 window onto the display */
 	XMapWindow(wnd->dsp, wnd->id);
@@ -96,7 +96,7 @@ void	*xzoom_init(void) {
 	return (wnd);
 }
 
-int	xzoom_event_poll(void *wnd) {
+int	zoom_event_poll(void *wnd) {
 	XEvent	event;
 	t_wnd	*wptr;
 
@@ -137,14 +137,14 @@ int	xzoom_event_poll(void *wnd) {
 	return (1);
 }
 
-int	xzoom_should_quit(void *wnd) {
+int	zoom_should_quit(void *wnd) {
 	t_wnd	*wptr;
 
 	wptr = (t_wnd*) wnd;
 	return (wptr->quit);
 }
 
-int	xzoom_quit(void *wnd) {
+int	zoom_quit(void *wnd) {
 	t_wnd	*wptr;
 
 	wptr = (t_wnd *) wnd;
@@ -156,7 +156,7 @@ int	xzoom_quit(void *wnd) {
 	return (1);
 }
 
-int	xzoom_swap_buffers(void *wnd) {
+int	zoom_swap_buffers(void *wnd) {
 	t_wnd	*wptr;
 
 	wptr = (t_wnd *) wnd;
@@ -164,7 +164,7 @@ int	xzoom_swap_buffers(void *wnd) {
 	return (1);
 }
 
-int	xzoom_window_w(void *wnd) {
+int	zoom_window_w(void *wnd) {
 	XWindowAttributes	attr;
 	t_wnd				*wptr;
 
@@ -173,7 +173,7 @@ int	xzoom_window_w(void *wnd) {
 	return (attr.width);
 }
 
-int	xzoom_window_h(void *wnd) {
+int	zoom_window_h(void *wnd) {
 	XWindowAttributes	attr;
 	t_wnd				*wptr;
 
@@ -182,7 +182,7 @@ int	xzoom_window_h(void *wnd) {
 	return (attr.height);
 }
 
-static void	*__xzoom_fbconfig(void *wnd, int *best) {
+static void	*__zoom_fbconfig(void *wnd, int *best) {
 	GLXFBConfig	*fbconf;
 	XVisualInfo	*vinf;
 	unsigned	fbconf_cnt;
@@ -219,7 +219,7 @@ static void	*__xzoom_fbconfig(void *wnd, int *best) {
  * thus we need to set it to something to not scroll to the top-left corner at the beginning 
  * (before the mouse motion event) 
  * */
-static int	__xzoom_query_mousepos(void *wnd) {
+static int	__zoom_query_mousepos(void *wnd) {
 	Window		wnd_return, wnd_child;
 	unsigned	result;
 	int			root_x, root_y;
@@ -241,7 +241,7 @@ static int	__xzoom_query_mousepos(void *wnd) {
 	return (1);
 }
 
-static int	__xzoom_fullscreen(void *wnd) {
+static int	__zoom_fullscreen(void *wnd) {
 	Atom	wm_state;
 	Atom	wm_fullscr;
 	t_wnd	*wptr;

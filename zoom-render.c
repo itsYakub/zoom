@@ -1,5 +1,5 @@
-#include "xzoom.h"
-#include "xzoom-opengl.h"
+#include "zoom.h"
+#include "zoom-opengl.h"
 
 #include <stdlib.h>
 
@@ -28,10 +28,10 @@ static const char	*glsl_fragment =
 "   f_Col = texture(u_Texture, v_TexCoord) * v_Col;\n"
 "}";
 
-void	*xzoom_render(void *wnd) {
+void	*zoom_render(void *wnd) {
 	unsigned	glsl_vert;
 	unsigned	glsl_frag;
-	unsigned	index_data[XZOOM_QUADC * 6];
+	unsigned	index_data[ZOOM_QUADC * 6];
 	unsigned	texture_data;
 	t_rndr		*rndr;
 
@@ -54,7 +54,7 @@ void	*xzoom_render(void *wnd) {
 	glDeleteShader(glsl_vert);
 	glDeleteShader(glsl_frag);
 	/* Buffers and arrays creation */
-	for (int i = 0, off = 0; i < XZOOM_QUADC * 6; off += 4) {
+	for (int i = 0, off = 0; i < ZOOM_QUADC * 6; off += 4) {
 		index_data[i++] = 0 + off;
 		index_data[i++] = 1 + off;
 		index_data[i++] = 2 + off;
@@ -68,7 +68,7 @@ void	*xzoom_render(void *wnd) {
 	glGenBuffers(1, &rndr->s_gl.ebo);
 	glBindBuffer(GL_ARRAY_BUFFER, rndr->s_gl.vbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rndr->s_gl.ebo);
-	glBufferData(GL_ARRAY_BUFFER, XZOOM_QUADC * 9 * 4 * sizeof(float), NULL, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, ZOOM_QUADC * 9 * 4 * sizeof(float), NULL, GL_DYNAMIC_DRAW);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(index_data), index_data, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
@@ -88,8 +88,8 @@ void	*xzoom_render(void *wnd) {
 	glBindTexture(GL_TEXTURE_2D, 0);
 	rndr->s_txt.cur = rndr->s_txt.def;
 	/* Projection setup */
-	xzoom_mat4_identity(rndr->s_proj.mat_v);
-	xzoom_mat4_ortho(rndr->s_proj.mat_p, 0.0f, xzoom_window_h(wnd), 0.0f, xzoom_window_w(wnd));
+	zoom_mat4_identity(rndr->s_proj.mat_v);
+	zoom_mat4_ortho(rndr->s_proj.mat_p, 0.0f, zoom_window_h(wnd), 0.0f, zoom_window_w(wnd));
 	glUseProgram(rndr->s_gl.shd);
 	rndr->s_proj.mat_p_loc = glGetUniformLocation(rndr->s_gl.shd, "u_proj");
 	rndr->s_proj.mat_v_loc = glGetUniformLocation(rndr->s_gl.shd, "u_view");
@@ -104,13 +104,13 @@ void	*xzoom_render(void *wnd) {
 	return (rndr);
 }
 
-int	xzoom_begin(void *rndr) {
+int	zoom_begin(void *rndr) {
 	t_rndr	*rptr;
 
 	rptr = (t_rndr *) rndr;
-	xzoom_mat4_ortho(rptr->s_proj.mat_p, 0.0f, xzoom_window_h(rptr->wnd), 0.0f, xzoom_window_w(rptr->wnd));
-	xzoom_mat4_identity(rptr->s_proj.mat_v);
-	xzoom_mat4_trans(
+	zoom_mat4_ortho(rptr->s_proj.mat_p, 0.0f, zoom_window_h(rptr->wnd), 0.0f, zoom_window_w(rptr->wnd));
+	zoom_mat4_identity(rptr->s_proj.mat_v);
+	zoom_mat4_trans(
 		rptr->s_proj.mat_v,
 		(t_vec3) {
 			rptr->s_proj.cam_cur.off[0],
@@ -119,7 +119,7 @@ int	xzoom_begin(void *rndr) {
 		},
 		rptr->s_proj.mat_v
 	);
-	xzoom_mat4_scale(
+	zoom_mat4_scale(
 		rptr->s_proj.mat_v,
 		(t_vec3) {
 			rptr->s_proj.cam_cur.scl,
@@ -128,7 +128,7 @@ int	xzoom_begin(void *rndr) {
 		},
 		rptr->s_proj.mat_v
 	);
-	xzoom_mat4_trans(
+	zoom_mat4_trans(
 		rptr->s_proj.mat_v,
 		(t_vec3) {
 			-rptr->s_proj.cam_cur.pos[0],
@@ -140,7 +140,7 @@ int	xzoom_begin(void *rndr) {
 	return (1);
 }
 
-int	xzoom_end(void *rndr) {
+int	zoom_end(void *rndr) {
 	t_rndr	*rptr;
 
 	rptr = (t_rndr *) rndr;
@@ -157,27 +157,27 @@ int	xzoom_end(void *rndr) {
 	return (1);
 }
 
-int	xzoom_begin_camera(void *rndr, t_cam cam) {
+int	zoom_begin_camera(void *rndr, t_cam cam) {
 	t_rndr	*rptr;
 
 	rptr = (t_rndr *) rndr;
 	rptr->s_proj.cam_cur = cam;
-	xzoom_end(rndr);
-	xzoom_begin(rndr);
+	zoom_end(rndr);
+	zoom_begin(rndr);
 	return (1);
 }
 
-int	xzoom_end_camera(void *rndr) {
+int	zoom_end_camera(void *rndr) {
 	t_rndr	*rptr;
 
 	rptr = (t_rndr *) rndr;
 	rptr->s_proj.cam_cur = rptr->s_proj.cam_def;
-	xzoom_end(rndr);
-	xzoom_begin(rndr);
+	zoom_end(rndr);
+	zoom_begin(rndr);
 	return (1);
 }
 
-int	xzoom_render_quit(void *rndr) {
+int	zoom_render_quit(void *rndr) {
 	t_rndr	*rptr;
 
 	rptr = (t_rndr *) rndr;
@@ -190,7 +190,7 @@ int	xzoom_render_quit(void *rndr) {
 	return (1);
 }
 
-int		xzoom_default_texture(void *rndr) {
+int		zoom_default_texture(void *rndr) {
 	t_rndr	*rptr;
 
 	rptr = (t_rndr *) rndr;

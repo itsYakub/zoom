@@ -1,10 +1,10 @@
-#include "xzoom.h"
+#include "zoom.h"
 
 #include <stdlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xlib.h>
 
-char	*xzoom_screenshot(void) {
+char	*zoom_screenshot(void) {
 	XWindowAttributes	attr;
 	XImage				*img;
 	Display				*dsp;

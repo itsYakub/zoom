@@ -4,23 +4,24 @@ CFLAGS =						\
 	-Wextra						\
 	-Werror						\
 	-std=c99					\
-	-g							\
 	-O3
 LFLAGS =						\
 	-lGL						\
 	-lGLX						\
 	-lX11
 SRCS =							\
-	./xzoom-window.c			\
-	./xzoom-render.c			\
-	./xzoom-draw.c				\
-	./xzoom-opengl.c			\
-	./xzoom-screenshot.c		\
-	./xzoom-math.c				\
-	./xzoom-input.c				\
-	./xzoom.c
+	./zoom-window.c				\
+	./zoom-render.c				\
+	./zoom-draw.c				\
+	./zoom-opengl.c				\
+	./zoom-screenshot.c			\
+	./zoom-math.c				\
+	./zoom-input.c				\
+	./zoom.c
 OBJS = $(SRCS:.c=.o)
-TARGET = xzoom
+TARGET = zoom
+
+all: $(TARGET)
 
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) $^ -o $@ $(LFLAGS)
@@ -28,7 +29,17 @@ $(TARGET): $(OBJS)
 $(OBJS): %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-.PHONY: clean
+.PHONY: install uninstall clean
+
+ifeq ($(PREFIX),)
+    PREFIX := /usr/local
+endif
+
+install: $(TARGET)
+	install $(TARGET) $(PREFIX)/bin
+
+uninsall: 
+	rm -f /usr/local/bin/$(TARGET)
 
 clean:
 	rm -f $(OBJS)
