@@ -94,6 +94,13 @@ void	*xzoom_render(void *wnd) {
 	rndr->s_proj.mat_p_loc = glGetUniformLocation(rndr->s_gl.shd, "u_proj");
 	rndr->s_proj.mat_v_loc = glGetUniformLocation(rndr->s_gl.shd, "u_view");
 	glUseProgram(0);
+	/* Camera setup */
+	rndr->s_proj.cam_def = (t_cam) {
+		.pos = { 0.0f, 0.0f },
+		.off = { 0.0f, 0.0f },
+		.scl = 1.0f
+	};
+	rndr->s_proj.cam_cur = rndr->s_proj.cam_def;
 	return (rndr);
 }
 
@@ -101,10 +108,35 @@ int	xzoom_begin(void *rndr) {
 	t_rndr	*rptr;
 
 	rptr = (t_rndr *) rndr;
-	glUseProgram(rptr->s_gl.shd);
-	glUniformMatrix4fv(rptr->s_proj.mat_p_loc, 1, 0, &rptr->s_proj.mat_p[0][0]);
-	glUniformMatrix4fv(rptr->s_proj.mat_v_loc, 1, 0, &rptr->s_proj.mat_v[0][0]);
-	glUseProgram(0);
+	xzoom_mat4_ortho(rptr->s_proj.mat_p, 0.0f, xzoom_window_h(rptr->wnd), 0.0f, xzoom_window_w(rptr->wnd));
+	xzoom_mat4_identity(rptr->s_proj.mat_v);
+	xzoom_mat4_trans(
+		rptr->s_proj.mat_v,
+		(t_vec3) {
+			rptr->s_proj.cam_cur.off[0],
+			rptr->s_proj.cam_cur.off[1],
+			0.0f
+		},
+		rptr->s_proj.mat_v
+	);
+	xzoom_mat4_scale(
+		rptr->s_proj.mat_v,
+		(t_vec3) {
+			rptr->s_proj.cam_cur.scl,
+			rptr->s_proj.cam_cur.scl,
+			1.0f
+		},
+		rptr->s_proj.mat_v
+	);
+	xzoom_mat4_trans(
+		rptr->s_proj.mat_v,
+		(t_vec3) {
+			-rptr->s_proj.cam_cur.pos[0],
+			-rptr->s_proj.cam_cur.pos[1],
+			0.0f
+		},
+		rptr->s_proj.mat_v
+	);
 	return (1);
 }
 
@@ -115,11 +147,33 @@ int	xzoom_end(void *rndr) {
 	glUseProgram(rptr->s_gl.shd);
 	glBindVertexArray(rptr->s_gl.vao);
 	glBindTextureUnit(0, rptr->s_txt.cur);
+	glUniformMatrix4fv(rptr->s_proj.mat_p_loc, 1, 0, &rptr->s_proj.mat_p[0][0]);
+	glUniformMatrix4fv(rptr->s_proj.mat_v_loc, 1, 0, &rptr->s_proj.mat_v[0][0]);
 	glDrawElements(GL_TRIANGLES, rptr->s_quad.cnt * 6, GL_UNSIGNED_INT, 0);
 	glBindTextureUnit(0, 0);
 	glBindVertexArray(0);
 	glUseProgram(0);
 	rptr->s_quad.cnt = 0;
+	return (1);
+}
+
+int	xzoom_begin_camera(void *rndr, t_cam cam) {
+	t_rndr	*rptr;
+
+	rptr = (t_rndr *) rndr;
+	rptr->s_proj.cam_cur = cam;
+	xzoom_end(rndr);
+	xzoom_begin(rndr);
+	return (1);
+}
+
+int	xzoom_end_camera(void *rndr) {
+	t_rndr	*rptr;
+
+	rptr = (t_rndr *) rndr;
+	rptr->s_proj.cam_cur = rptr->s_proj.cam_def;
+	xzoom_end(rndr);
+	xzoom_begin(rndr);
 	return (1);
 }
 

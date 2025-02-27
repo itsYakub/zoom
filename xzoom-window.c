@@ -1,5 +1,6 @@
 #include "xzoom.h"
 
+#include <X11/X.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -54,7 +55,7 @@ void	*xzoom_init(void) {
 	wndattr0.colormap = cmap;
 	wndattr0.background_pixmap = None;
     wndattr0.border_pixel = 0;
-	wndattr0.event_mask = CWColormap | CWBorderPixel | CWBackPixel | CWEventMask | KeyPress | ClientMessage;
+	wndattr0.event_mask = CWColormap | CWBorderPixel | CWBackPixel | CWEventMask | MotionNotify | KeyPress | ButtonPress | ButtonRelease | ClientMessage;
 	/* Creating an X11 window */
 	wnd->id = XCreateWindow(
 		wnd->dsp,
@@ -81,7 +82,7 @@ void	*xzoom_init(void) {
 	/* Setting up last things for a window*/
 	wnd->wm_quit = XInternAtom(wnd->dsp, "WM_DELETE_WINDOW", 0);
 	XSetWMProtocols(wnd->dsp, wnd->id, &wnd->wm_quit, 1);
-	XSelectInput(wnd->dsp, wnd->id, KeyPressMask | KeyReleaseMask);
+	XSelectInput(wnd->dsp, wnd->id, KeyPressMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask);
 	__xzoom_fullscreen(wnd);
 	xzoom_loadgl((void *(*)(const char *)) glXGetProcAddress);
 	glViewport(0, 0, wndattr1.width, wndattr1.height);
@@ -98,9 +99,29 @@ int	xzoom_event_poll(void *wnd) {
 	t_wnd	*wptr;
 
 	wptr = (t_wnd *) wnd;
+	wptr->s_input.ptr_pos_prev[0] = wptr->s_input.ptr_pos[0];
+	wptr->s_input.ptr_pos_prev[1] = wptr->s_input.ptr_pos[1];
 	while (XPending(wptr->dsp)) {
 		XNextEvent(wptr->dsp, &event);
 		switch (event.type) {
+			case (MotionNotify): {
+				wptr->s_input.ptr_pos[0] = (float) event.xmotion.x;
+				wptr->s_input.ptr_pos[1] = (float) event.xmotion.y;
+			} break;
+			case (ButtonPress): {
+				if (event.xbutton.button == 4) {
+					wptr->s_input.ptr_wheel[0] = 1.0f;
+				}
+				else if (event.xbutton.button == 5) {
+					wptr->s_input.ptr_wheel[1] = -1.0f;
+				}
+				else {
+					wptr->s_input.ptr_prs = 1;
+				}
+			} break;
+			case (ButtonRelease): {
+				wptr->s_input.ptr_prs = 0;
+			} break;
 			case (KeyPress): {
 				wptr->quit = 1;
 			} break;
@@ -108,7 +129,7 @@ int	xzoom_event_poll(void *wnd) {
 				if (event.xclient.data.l[0] == (long int) wptr->wm_quit) {
 					wptr->quit = 1;
 				}
-			}
+			} break;
 		}
 	}
 	return (1);
