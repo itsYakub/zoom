@@ -5,19 +5,21 @@ CFLAGS =						\
 	-Werror						\
 	-std=c99					\
 	-O3
+IFLAGS =						\
+	-I./inc/
 LFLAGS =						\
 	-lGL						\
 	-lGLX						\
 	-lX11
 SRCS =							\
-	./zoom-window.c				\
-	./zoom-render.c				\
-	./zoom-draw.c				\
-	./zoom-opengl.c				\
-	./zoom-screenshot.c			\
-	./zoom-math.c				\
-	./zoom-input.c				\
-	./zoom.c
+	./src/zoom-window.c			\
+	./src/zoom-render.c			\
+	./src/zoom-draw.c			\
+	./src/zoom-opengl.c			\
+	./src/zoom-screenshot.c		\
+	./src/zoom-math.c			\
+	./src/zoom-input.c			\
+	./src/zoom.c
 OBJS = $(SRCS:.c=.o)
 TARGET = zoom
 
@@ -27,7 +29,7 @@ $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) $^ -o $@ $(LFLAGS)
 
 $(OBJS): %.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@ $(IFLAGS)
 
 .PHONY: install uninstall clean
 
