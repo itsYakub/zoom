@@ -13,6 +13,7 @@ typedef GLXContext (* PFNGLXCREATECONTEXTATTRIBSARBPROC) (Display *, GLXFBConfig
 PFNGLXCREATECONTEXTATTRIBSARBPROC	glXCreateContextAttribsARB;
 
 static void	*__xzoom_fbconfig(void *, int *);
+static int	__xzoom_query_mousepos(void *);
 static int	__xzoom_fullscreen(void *);
 
 static int	glattr[] = {
@@ -84,6 +85,7 @@ void	*xzoom_init(void) {
 	XSetWMProtocols(wnd->dsp, wnd->id, &wnd->wm_quit, 1);
 	XSelectInput(wnd->dsp, wnd->id, KeyPressMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask);
 	__xzoom_fullscreen(wnd);
+	__xzoom_query_mousepos(wnd); 
 	xzoom_loadgl((void *(*)(const char *)) glXGetProcAddress);
 	glViewport(0, 0, wndattr1.width, wndattr1.height);
 	/* Mapping an X11 window onto the display */
@@ -110,10 +112,10 @@ int	xzoom_event_poll(void *wnd) {
 			} break;
 			case (ButtonPress): {
 				if (event.xbutton.button == 4) {
-					wptr->s_input.ptr_wheel[0] = 1.0f;
+					wptr->s_input.ptr_wheel = 0.8f;
 				}
 				else if (event.xbutton.button == 5) {
-					wptr->s_input.ptr_wheel[1] = -1.0f;
+					wptr->s_input.ptr_wheel = -0.8f;
 				}
 				else {
 					wptr->s_input.ptr_prs = 1;
@@ -210,6 +212,33 @@ static void	*__xzoom_fbconfig(void *wnd, int *best) {
 		return (0);
 	}
 	return (fbconf);
+}
+
+/* 
+ * At the beginning, mouse position is set to (0,0), 
+ * thus we need to set it to something to not scroll to the top-left corner at the beginning 
+ * (before the mouse motion event) 
+ * */
+static int	__xzoom_query_mousepos(void *wnd) {
+	Window		wnd_return, wnd_child;
+	unsigned	result;
+	int			root_x, root_y;
+	int			win_x, win_y;
+	t_wnd		*wptr;
+
+	wptr = (t_wnd *) wnd;
+	XQueryPointer(
+		wptr->dsp,
+		wptr->id,
+		&wnd_return,
+		&wnd_child,
+		&root_x, &root_y,
+		&win_x, &win_y,
+		&result
+	);
+	wptr->s_input.ptr_pos[0] = (float) win_x;
+	wptr->s_input.ptr_pos[1] = (float) win_y;
+	return (1);
 }
 
 static int	__xzoom_fullscreen(void *wnd) {

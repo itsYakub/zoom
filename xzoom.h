@@ -30,7 +30,7 @@ typedef struct s_wnd {
 	unsigned long	wm_quit;
 	struct {
 		int		ptr_prs;
-		t_vec2	ptr_wheel;
+		float	ptr_wheel;
 		t_vec2	ptr_pos_prev;
 		t_vec2	ptr_pos;
 	}	s_input;

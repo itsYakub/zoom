@@ -47,7 +47,7 @@ int	xzoom_mat4_inverse(t_mat4x4 dst) {
 			c10 = b * g - c * f,
 			c11 = i * o - k * m,
 			c12 = a * g - c * e,
-			idt = 1.0f / (c8 * c1 + c4 * c9 + c10 * c3 + c2 * c7 - c12 * c5 - c6 - c11),
+			idt = 1.0f / (c8 * c1 + c4 * c9 + c10 * c3 + c2 * c7 - c12 * c5 - c6 * c11),
 			ndt = -idt;
 	
 	dst[0][0] = (f * c1  - g * c5  + h * c9)  * idt;

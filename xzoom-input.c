@@ -1,5 +1,6 @@
 #include "xzoom.h"
 
+#include <math.h>
 #include <string.h>
 #include <stdio.h>
 
@@ -15,13 +16,7 @@ float	xzoom_mouse_wheel(void *wnd) {
 	t_wnd	*wptr;
 
 	wptr = (t_wnd *) wnd;
-	wheel = 0.0f;
-	if (wptr->s_input.ptr_wheel[0] > wptr->s_input.ptr_wheel[1]) {
-		wheel = wptr->s_input.ptr_wheel[0];
-	}
-	else if (wptr->s_input.ptr_wheel[0] < wptr->s_input.ptr_wheel[1]){	
-		wheel = -wptr->s_input.ptr_wheel[1];
-	}
+	wheel = wptr->s_input.ptr_wheel;
 	return (wheel);
 }
 

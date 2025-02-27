@@ -56,16 +56,19 @@ int	xzoom_zoom(void *wnd, t_cam *cam) {
 	t_vec2	mouse_world_pos;
 	float	scale_factor;
 	float	mouse_wheel;
+	t_wnd	*wptr;
 
+	wptr = (t_wnd *) wnd;
 	xzoom_screen_to_world(cam, (t_vec2) { xzoom_mouse_x(wnd), xzoom_mouse_y(wnd) }, mouse_world_pos);
-	cam->pos[0] = mouse_world_pos[0];
-	cam->pos[1] = mouse_world_pos[1];
 	cam->off[0] = xzoom_mouse_x(wnd);
 	cam->off[1] = xzoom_mouse_y(wnd);
+	cam->pos[0] = mouse_world_pos[0];
+	cam->pos[1] = mouse_world_pos[1];
 	mouse_wheel = xzoom_mouse_wheel(wnd);
 	scale_factor = 1.0f + (0.25f * fabsf(mouse_wheel));
 	if (mouse_wheel < 0.0f)
 		scale_factor = 1.0f / scale_factor;
 	cam->scl *= scale_factor;
+	wptr->s_input.ptr_wheel = 0.0f;
 	return (1);
 }
