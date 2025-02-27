@@ -41,7 +41,7 @@ install: $(TARGET)
 	install $(TARGET) $(PREFIX)/bin
 
 uninsall: 
-	rm -f /usr/local/bin/$(TARGET)
+	rm -f $(PREFIX)/bin/$(TARGET)
 
 clean:
 	rm -f $(OBJS)
